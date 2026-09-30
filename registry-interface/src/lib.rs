@@ -313,6 +313,15 @@ pub trait RegistryInterface {
         offset: u32,
         limit: u32,
     ) -> Vec<ContractEntry>;
+
+    /// Remove a registration entirely, reclaiming its storage.
+    ///
+    /// Deletes the stored entry, its owner-index membership and its
+    /// category-index membership, and decrements the live contract count.
+    /// Refuses with `StakeNotEmpty` while the registration still holds
+    /// stake — call `withdraw_stake` first, since deleting an entry that
+    /// still holds collateral would strand it. Emits `contract_deregistered`.
+    fn deregister(env: Env, owner: Address, contract_id: Address) -> Result<(), RegistryError>;
 }
 
 /// Errors the registry's read-only surface can return.
